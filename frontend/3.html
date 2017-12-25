@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="googlebot" content="noindex, nofollow">
+
+    <script type="text/javascript" src="vue.js"></script>
+
+
+    <style type="text/css">
+        a {
+            color: #999;
+        }
+
+        .current {
+            color: red;
+        }
+
+        ul {
+            padding: 0;
+            list-style-type: none;
+        }
+
+        li {
+            display: inline;
+            margin: 5px 5px;
+        }
+
+        a.first::after {
+            content: '...'
+        }
+
+        a.last::before {
+            content: '...'
+        }
+    </style>
+
+    <title></title>
+
+
+    <script type='text/javascript'>//<![CDATA[
+    window.onload = function () {
+        new Vue({
+            el: 'body',
+
+            data: {
+                users: [
+                    {"id": 1, "name": "Tom"},
+                    {"id": 2, "name": "Kate"},
+                    {"id": 3, "name": "Jack"},
+                    {"id": 4, "name": "Jill"},
+                    {"id": 4, "name": "bill"},
+                    {"id": 4, "name": "aill"},
+                    {"id": 4, "name": "cill"},
+                    {"id": 4, "name": "dill"},
+                    {"id": 4, "name": "eill"},
+                    {"id": 4, "name": "cill"},
+                    {"id": 4, "name": "dill"},
+                    {"id": 4, "name": "eill"},
+                    {"id": 4, "name": "cill"},
+                    {"id": 4, "name": "dill"},
+                    {"id": 4, "name": "eill"},
+                    {"id": 4, "name": "cill"},
+                    {"id": 4, "name": "dill"},
+                    {"id": 4, "name": "eill"},
+                    {"id": 4, "name": "cill"},
+                    {"id": 4, "name": "dill"},
+                    {"id": 4, "name": "eill"},
+                    {"id": 5,"name":"..."}
+
+                ],
+                searchKey: '',
+                currentPage: 0,
+                itemsPerPage: 10,
+                resultCount: 0
+            },
+            computed: {
+                totalPages: function () {
+                    return Math.ceil(this.resultCount / this.itemsPerPage)
+                },
+                filteredUsers: function () {
+                    var self = this
+                    return self.users.filter(function (user) {
+                        if((self.searchKey.length === 0 || !self.searchKey.trim())){
+                            return true
+                        }else if(user.name.indexOf("...") !=-1){
+                            return true
+                        }else{
+                            return user.name.indexOf(self.searchKey) !== -1
+                        }
+                    })
+                }
+            },
+            methods: {
+                setPage: function (pageNumber) {
+                    this.currentPage = pageNumber
+                }
+            },
+            filters: {
+                paginate1: function (list) {
+                    this.resultCount = list.length
+                    if (this.currentPage >= this.totalPages) {
+                        this.currentPage = this.totalPages - 1
+                    }
+                    var index = this.currentPage * this.itemsPerPage
+                    return list.slice(index, index + this.itemsPerPage)
+                }
+            }
+        })
+    }//]]>
+
+    </script>
+
+
+</head>
+
+<body>
+<input type="text" v-model="searchKey" value="Tom"/>
+<ul>
+    <li v-for="user in filteredUsers | paginate1">{{ user.name }}</li>
+</ul>
+
+<ul>
+    <li v-for="pageNumber in totalPages"
+        v-if="Math.abs(pageNumber - currentPage) < 3 || pageNumber == totalPages - 1 || pageNumber == 0">
+        <a href="#" @click="setPage(pageNumber)"
+           :class="{current: currentPage === pageNumber, last: (pageNumber == totalPages - 1 && Math.abs(pageNumber - currentPage) > 3), first:(pageNumber == 0 && Math.abs(pageNumber - currentPage) > 3)}">{{
+            pageNumber+1 }}</a>
+    </li>
+</ul>
+
+<script>
+    // tell the embed parent frame the height of the content
+    if (window.parent && window.parent.parent) {
+        window.parent.parent.postMessage(["resultsFrame", {
+            height: document.body.getBoundingClientRect().height,
+            slug: "None"
+        }], "*")
+    }
+</script>
+
+</body>
+
+</html>
+
+

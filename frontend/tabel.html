@@ -1,0 +1,219 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue简单案例</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/element-ui/1.2.3/theme-default/index.css"></link>
+    <script src="https://cdn.bootcss.com/vue/2.2.1/vue.min.js"></script>
+    <script src="https://cdn.bootcss.com/element-ui/1.2.3/index.js"></script>
+</head>
+<body>
+<!--element-ui组件模板-->
+<div id="app" v-for = "tableData | paginate">
+    <template >
+        <el-table
+                :data="tableData"
+                border
+                style="width: 100%">
+            <el-table-column prop="date" label="日期" width="180"></el-table-column>
+            <el-table-column prop="name" label="姓名" width="180"></el-table-column>
+            <el-table-column prop="address" label="地址"></el-table-column>
+            <el-table-column operation="操作" label="操作">
+                <template scope="scope">
+                    <el-button size="small" @click="modify(scope.$index, scope.row)">编辑</el-button>
+                    <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-button class="add_btn" @click="dialogFormVisible = true">添加</el-button>
+
+        <el-dialog title="添加" v-model="dialogFormVisible ">
+            <el-form :model="form">
+                <el-form-item label="日期" :label-width="formLabelWidth">
+                    <el-input v-model="form.date" auto-complete="off" size="small"></el-input>
+                </el-form-item>
+                <el-form-item label="姓名" :label-width="formLabelWidth">
+                    <el-input v-model="form.name" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="地址" :label-width="formLabelWidth">
+                    <el-input v-model="form.address" auto-complete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">取 消</el-button>
+                <el-button type="primary" @click="add">确 定</el-button>
+            </div>
+        </el-dialog>
+    </template>
+    <ul>
+        <li v-for="pageNumber in totalPages"
+            v-if="Math.abs(pageNumber - currentPage) < 3 || pageNumber == totalPages - 1 || pageNumber == 0">
+            <a href="#" @click="setPage(pageNumber)"
+               :class="{current: currentPage === pageNumber, last: (pageNumber == totalPages - 1 && Math.abs(pageNumber - currentPage) > 3), first:(pageNumber == 0 && Math.abs(pageNumber - currentPage) > 3)}">{{
+                pageNumber+1 }}</a>
+        </li>
+    </ul>
+</div>
+
+<script>
+    var vm = new Vue({
+        data() {
+            return {
+                form: {   //添加列表时,初始化数据
+                    date: '',
+                    name: '',
+                    address: ''
+                },
+                formLabelWidth: '50px', //添加数据弹框label标签宽度
+                dialogFormVisible: false, //控制添加数据的弹框显示关闭
+                tableData: [{ //初始化列表数据
+                    date: '2016-05-02',
+                    name: '王小虎1',
+                    address: '上海市普陀区金沙江路 1518 弄',
+                }, {
+                    date: '2016-05-04',
+                    name: '王小虎2',
+                    address: '上海市普陀区金沙江路 1517 弄',
+                }, {
+                    date: '2016-05-01',
+                    name: '王小虎3',
+                    address: '上海市普陀区金沙江路 1519 弄',
+                },{ //初始化列表数据
+                    date: '2016-05-02',
+                    name: '王小虎1',
+                    address: '上海市普陀区金沙江路 1518 弄',
+                }, {
+                    date: '2016-05-04',
+                    name: '王小虎2',
+                    address: '上海市普陀区金沙江路 1517 弄',
+                }, {
+                    date: '2016-05-01',
+                    name: '王小虎3',
+                    address: '上海市普陀区金沙江路 1519 弄',
+                },{ //初始化列表数据
+                    date: '2016-05-02',
+                    name: '王小虎1',
+                    address: '上海市普陀区金沙江路 1518 弄',
+                }, {
+                    date: '2016-05-04',
+                    name: '王小虎2',
+                    address: '上海市普陀区金沙江路 1517 弄',
+                }, {
+                    date: '2016-05-01',
+                    name: '王小虎3',
+                    address: '上海市普陀区金沙江路 1519 弄',
+                },{ //初始化列表数据
+                    date: '2016-05-02',
+                    name: '王小虎1',
+                    address: '上海市普陀区金沙江路 1518 弄',
+                }, {
+                    date: '2016-05-04',
+                    name: '王小虎2',
+                    address: '上海市普陀区金沙江路 1517 弄',
+                }, {
+                    date: '2016-05-01',
+                    name: '王小虎3',
+                    address: '上海市普陀区金沙江路 1519 弄',
+                },{ //初始化列表数据
+                    date: '2016-05-02',
+                    name: '王小虎1',
+                    address: '上海市普陀区金沙江路 1518 弄',
+                }, {
+                    date: '2016-05-04',
+                    name: '王小虎2',
+                    address: '上海市普陀区金沙江路 1517 弄',
+                }, {
+                    date: '2016-05-01',
+                    name: '王小虎3',
+                    address: '上海市普陀区金沙江路 1519 弄',
+                },{ //初始化列表数据
+                    date: '2016-05-02',
+                    name: '王小虎1',
+                    address: '上海市普陀区金沙江路 1518 弄',
+                }, {
+                    date: '2016-05-04',
+                    name: '王小虎2',
+                    address: '上海市普陀区金沙江路 1517 弄',
+                }, {
+                    date: '2016-05-01',
+                    name: '王小虎3',
+                    address: '上海市普陀区金沙江路 1519 弄',
+                }],
+                searchKey: '',
+                currentPage: 0,
+                itemsPerPage: 1,
+                resultCount: 0
+            }
+        },
+
+        computed: {
+            totalPages: function () {
+                return Math.ceil(this.resultCount / this.itemsPerPage)
+            }
+        },
+        methods: {  //方法
+            //添加
+            add(){
+                this.tableData.push(this.form);
+                this.dialogFormVisible = false;
+            },
+            //删除
+            handleDelete(index, row){
+                this.tableData.splice(index, 1);
+            },
+            //编辑
+            modify(index, row) {
+                var that = this;
+                this.$prompt('修改姓名', '编辑', {
+                    confirmButtonText: '保存',
+                    cancelButtonText: '取消',
+                    inputValue: row.name
+                }).then(function ({value}) {//编辑保存
+                    row.name = value;
+                }).catch(function () {  //编辑取消
+                    that.$message({
+                        type: 'info',
+                        message: '取消编辑'
+                    });
+                });
+            },
+            setPage: function(pageNumber) {
+                this.currentPage = pageNumber
+            }
+        },
+        filters: {
+            paginate: function (list) {
+                this.resultCount = list.length
+                if (this.currentPage >= this.totalPages) {
+                    this.currentPage = this.totalPages - 1
+                }
+                var index = this.currentPage * this.itemsPerPage
+                return list.slice(index, index + this.itemsPerPage)
+            }
+        }
+    }).$mount('#app');   //$mount('#app')是作用域(说白了就是一个div的盒子),用来存放列表
+
+</script>
+
+<style>
+    #app {
+        width: 90%;
+        margin: 30px auto;
+    }
+
+    .add_btn {
+        float: right;
+        margin: 10px 0;
+    }
+
+    .el-dialog--small {
+        width: 40%;
+    }
+
+    .el-dialog__body {
+        padding-bottom: 0;
+    }
+</style>
+
+</body>
+</html>
+
